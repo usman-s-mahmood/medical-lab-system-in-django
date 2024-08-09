@@ -1,0 +1,111 @@
+{% extends "BlogApp/base.html" %}
+
+{% block body %}
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container text-center py-5">
+            <h1 class="display-2 text-white mb-4 animated slideInDown">Liked Posts</h1>
+            <nav aria-label="breadcrumb animated slideInDown">
+                <ol class="breadcrumb justify-content-center mb-0">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="">Blog</a></li>
+                    <li class="breadcrumb-item text-primary" aria-current="page">Liked Posts</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- Page Header End -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mb-5">
+                {% if post_none %}
+                    <p class="fs-3"><strong class="text-center">No posts liked! Like your first post</strong></p>
+                    <a href="/posts" class="btn btn-success">Blog Posts</a>
+                {% endif %}
+                {% for post in posts %}
+                    <div class="row">
+                        <a href="/posts/{{post.title|slugify}}">
+                        {% if post.thumbnail %}
+                            <img src="{{post.thumbnail.url}}" alt="{{post.title}}" class="img-fluid" width="720px">
+                        {% else %}
+                            <img src="/media/default/default-post.png" alt="{{post.title}}" class="img-fluid" width="720px">
+                        {% endif %}
+                        </a>
+                    </div>
+                    <div class="row">
+                        <a href="/posts/{{post.title|slugify}}">
+                            <p class="fs-3"><strong class="text-dark">{{post.title}}</strong></p>
+                        </a>
+                        <p class="fs-6"><strong class="text-secondary">{{post.tagline|slice:":20"}} ...</strong></p>
+                    </div>
+                    <div class="btn-group mb-5">
+                        <a href="/posts/{{post.title|slugify}}" class="btn btn-success">Read Post</a>
+                        {% if user.is_staff or user.is_superuser %}
+                        {% if user.id == post.author.id or user.is_superuser %}
+                            <a href="/edit-post/{{post.id}}" class="btn btn-success me-2">Edit Post</a>
+                            <a href="/delete-post/{{post.id}}" class="btn btn-danger">Delete Post</a>
+                            <br>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                        <form class="d-flex" role="search" method=POST action="/search">
+                            {% csrf_token %}
+                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+                            <button class="btn btn-outline-primary" type="submit">Search</button>
+                        </form>
+                </div>
+                <br>
+                <div class="row">
+                    <hr>
+                        <p class="fs-4 text-center"><strong>Categories</strong></p>
+                    <hr>
+                    {% for value in categories %}
+                        <a href="/category/{{value|slugify}}">
+                            <p class="fs-6 text-center"><strong class="text-secondary">{{value}}</strong></p>
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="row d-flex">
+                    <hr>
+                        <p class="fs-3 text-center"><strong>Recent Posts</strong></p>
+                    <hr>
+                    <div class="row d-flex">
+                    {% for post in recents %}
+                        <div class="row mt-3">
+                            <div class="col-md-4 text-center">
+                                <a href="/posts/{{post.title|slugify}}">
+                                    {% if post.thumbnail %}
+                                        <img src="{{post.thumbnail.url}}" alt="{{post.title}}" class="img-fluid" width="100px">
+                                    {% else %}
+                                        <img src="/media/default/default-post.png" alt="{{post.title}}" class="img-fluid" width="100px">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="col-md-8 text-center">
+                                <a href="/posts/{{post.title|slugify}}">{{post.title|slice:":20"}} ...</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div>
+                {% if posts.has_previous %}
+                    <a href="?page={{posts.previous_page_number}}" class="btn btn-primary me-1">Previous</a>
+                {% endif %}
+                {% comment %} {{posts.number}}
+                {{posts.paginator.num_pages}} {% endcomment %}
+                {% if posts.has_next %}
+                    <a href="?page={{posts.next_page_number}}" class="btn btn-primary">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock body %}

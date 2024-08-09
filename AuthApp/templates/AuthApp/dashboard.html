@@ -1,0 +1,155 @@
+{% extends "BlogApp/base.html" %}
+
+{% block body %}
+
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container text-center py-5">
+            <h1 class="display-2 text-white mb-4 animated slideInDown">User Dashboard</h1>
+            <nav aria-label="breadcrumb animated slideInDown">
+                <ol class="breadcrumb justify-content-center mb-0">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="">Auth</a></li>
+                    <li class="breadcrumb-item text-primary" aria-current="page">Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+    <div class="container">
+        <hr>
+            <p class="fs-1 text-center"><strong class="text-secondary">Welcome to User Dashboard: {{user.username}}</strong></p>
+        <hr>
+        <div class="row">
+            <div class="col-md-4 p-3" style="background: silver;">
+                <div class="card-img text-center">
+                    {% if user.profile %}
+                        {% if user.profile.profile_pic %}
+                            <img src="{{user.profile.profile_pic.url}}" alt="{{user.username}}" class="img-fluid" width="120px">
+                        {% else %}
+                            <img src="/media/default/default-user.jpg" alt="{{user.username}}" class="img-fluid" width="120px">                    
+                        {% endif %}
+                    {% else %}
+                        <img src="/media/default/default-user.jpg" alt="{{user.username}}" class="img-fluid" width="120px">                    
+                    {% endif %}
+                </div>
+                <div class="d-flex flex-column mt-3">
+                    <a href="/auth/logout" class="btn btn-success mb-2">Logout</a>
+                    {% if user.profile %}
+                        <a href="/auth/edit-profile" class="btn btn-success mb-2">Edit Profile</a>
+                    {% else %}
+                        <a href="/auth/create-profile" class="btn btn-success mb-2">Create Profile</a>
+                    {% endif %}
+                    <a href="/auth/edit-user" class="btn btn-success mb-2">Edit Account</a>
+                    <a href="/auth/edit-password" class="btn btn-success mb-2">Edit Password</a>
+                    <a href="/auth/delete-user" class="btn btn-danger mb-2">Delete Account</a>
+                </div>
+            </div>
+            <div class="col-md-8 text-center">
+                <hr>
+                    <p class="fs-1 text-center"><strong class="text-secondary">User Details</strong></p>
+                <hr>
+                <p class="fs-4 text-center"><strong class="text-secondary">{{user.first_name}} {{user.last_name}}</strong></p>
+                <p class="fs-4 text-center"><strong class="text-secondary">Username: {{user.username}}</strong></p>
+                <p class="fs-4 text-center"><strong class="text-secondary">Last Login: {{user.last_login}}</strong></p>
+                <p class="fs-4 text-center"><strong class="text-secondary">Email: {{user.email}}</strong></p>
+                <p class="fs-4 text-center"><strong class="text-secondary">Date Joined: {{user.date_joined}}</strong></p>
+            </div>
+        </div>
+        <br>
+        <div class="row ">
+            <hr>
+                <p class="fs-1 text-center"><strong class="text-secondary">Profile Details</strong></p>
+            <hr>
+            {% if user.profile %}
+                <p class="fs-4 text-center"><strong class="text-secondary">About User: {{user.profile.about_user}}</strong></p>
+                {% if user.profile.social_link %}
+                    <p class="fs-4 text-center"><strong class="text-secondary">Social Link: <a href="{{user.profile.social_link}}">{{user.profile.social_link}}</a></strong></p>
+                {% endif %}
+            {% else %}
+                <div class="text-center mb-5">
+                    <p class="fs-4 text-center"><strong class="text-secondary">No profile created yet! Create your profile Now</strong></p>
+                    <a href="/auth/create-profile" class="btn btn-success">Create Profile</a>
+                </div>
+            {% endif %}
+            {% if report_none %}
+        <div class="row">
+            <hr>
+                <p class="fs-1 text-center"><strong>No reports uploaded yet!</strong></p>
+            <hr>
+        </div>
+    {% else %}
+        <div class="row">
+            <hr>
+                <p class="fs-1 text-center"><strong class="text-dark">Reports and Results for: {{user.username}}</strong></p>
+            <hr>
+                <div class="row text-center " data-wow-delay="0.1s">
+                    {% for report in reports %}
+                    {% if report.payment_status == 'paid' %}
+                        <div class="project-item mb-5 col-md-4 text-center">
+                            <div class="position-relative text-center">
+                                <a href="/media/reports/clients/{{report.filename}}">
+                                    <img src="/media/default/report-thumbnail.jpg" alt="{{report.patient_name}}" class="img-fluid" width="720px">
+                                </a>
+                            </div>
+                            <div class="p-4 text-center">
+                                <p><a class="text-dark" href="/media/reports/clients/{{report.filename}}">Patient Name: {{report.patient_name}}</a></p>
+                                <p class="text-secondary">Test Type: {{report.test_type}}</p>
+                                <p class="text-secondary">Age: {{report.age}}</p>
+                                <p class="text-secondary">Result: {{report.result}}</p>
+                                <p class="text-secondary">Evaluation: {{report.evaluation}}</p>
+                                <p class="text-secondary">Payment Status: {{report.payment_status}}</p>
+                                <p class="text-secondary">Payment: {{report.payment}} USD</p>
+                            </div>
+                            <div class="btn-group mb-5 text-center">
+                                <a href="/media/reports/clients/{{report.filename}}" class="btn btn-success me-2">Download Report</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="project-item mb-5 col-md-4 text-center">
+                            <div class="position-relative text-center">
+                                    <img src="/media/default/report-thumbnail.jpg" alt="{{report.patient_name}}" class="img-fluid" width="720px">
+                            </div>
+                            <div class="p-4 text-center">
+                                <p>Patient Name: {{report.patient_name}}</p>
+                                <p class="text-secondary">Test Type: {{report.test_type}}</p>
+                                <p class="text-secondary">Payment Status: {{report.payment_status}}</p>
+                                <p class="text-secondary">Payment: {{report.payment}} USD</p>
+                            </div>
+                            <div class="btn-group mb-5 text-center">
+                                <p class="text-secondary">Please Deposit your dues to access your reports <p>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% endfor %}
+                </div>
+                <div class="row text-center">
+                    <div>
+                        {% if reports.has_previous %}
+                            <a href="?page={{reports.previous_page_number}}" class="btn btn-primary me-1">Previous</a>
+                        {% endif %}
+                        {% if reports.has_next %}
+                            <a href="?page={{reports.next_page_number}}" class="btn btn-primary">Next</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %} 
+        </div>
+        <div class="row">
+            <hr>
+            <p class="fs-4 text-center"><strong class="text-secondary">Posts liked By {{user.username}} - <a href="/auth/liked-posts">Click here for more information</a></strong></p>
+            <hr>
+        </div>
+        {% if user.is_superuser or user.is_staff %}
+        <div class="row">
+            <hr>
+            <p class="fs-4 text-center"><strong class="text-secondary">Content Posted By {{user.username}} - <a href="/auth/posted-content">Click here for more information</a></strong></p>
+            <hr>
+        </div>
+        {% endif %}
+    </div>
+
+{% endblock body %}
